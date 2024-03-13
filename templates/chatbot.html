@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot</title>
+    <style>
+        #chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            padding: 10px;
+            max-width: 300px; /* Максимальная ширина чата */
+            overflow-y: auto; /* Включение вертикальной прокрутки, если содержимое чата слишком длинное */
+            max-height: 400px; /* Максимальная высота чата */
+        }
+        #chat-output {
+            max-height: 300px; /* Максимальная высота блока вывода сообщений */
+            overflow-y: auto; /* Включение вертикальной прокрутки для блока вывода сообщений */
+        }
+        #user-input {
+            width: calc(100% - 60px); /* Ширина поля ввода с учетом кнопки отправки */
+            margin-right: 5px;
+        }
+        button {
+            width: 50px; /* Ширина кнопки отправки */
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-output"></div>
+        <input type="text" id="user-input" placeholder="Напишите что-нибудь...">
+        <button onclick="sendMessage()">Отправить</button>
+    </div>
+    <script>
+        // JavaScript код для отправки сообщений на сервер и получения ответов
+        function sendMessage() {
+            var userInput = document.getElementById("user-input").value;
+            var chatOutput = document.getElementById("chat-output");
+
+            // Добавляем сообщение пользователя в блок вывода
+            chatOutput.innerHTML += "<p><strong>Вы:</strong> " + userInput + "</p>";
+
+            // Очищаем поле ввода
+            document.getElementById("user-input").value = "";
+
+            // Отправляем сообщение на сервер
+            fetch("/chatbot", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({message: userInput}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Получаем ответ от сервера и добавляем его в блок вывода
+                var botResponse = data.response;
+                chatOutput.innerHTML += "<p><strong>Чат-бот:</strong> " + botResponse + "</p>";
+            });
+        }
+    </script>
+</body>
+</html>
